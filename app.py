@@ -3,32 +3,19 @@ import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 from catboost import CatBoostClassifier
 from sklearn.metrics import accuracy_score
-from sklearn.model_selection import StratifiedKFold
-#from sklearn.grid_search import ParameterGrid
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedKFold, KFold
+from sklearn.model_selection import train_test_split,ParameterGrid
 from itertools import product, chain
 from tqdm import tqdm
-import numpy as np
-import pandas as pd
-from catboost import CatBoostClassifier
-from sklearn.model_selection import train_test_split,ParameterGrid
-from sklearn.model_selection import KFold
-from numba import jit
 from catboost import CatBoostClassifier, Pool, cv
+from numba import jit
 import tweepy
 from tweepy import OAuthHandler
-import pandas as pd
 import matplotlib.pyplot as plt
 import nltk
-import numpy as np
 from collections import Counter
-#import nltk
-import pandas as pd
-import numpy as np
 import plotly
 from plotly import graph_objs
-
-
 
 
 RANDOM_STATE = 0
@@ -77,7 +64,6 @@ data['user_verified'].fillna('0', inplace=True)
 data['user_url'].fillna('Unknown_url', inplace=True)
 
 
-# In[11]:
 
 
 test['created_at'].fillna('00-00-0000 00:00', inplace=True)
@@ -99,19 +85,11 @@ X_test=test
 cat_features=["text","created_at","source","user_screen_name","user_url","user_name","user_created_at","user_description","user_location","tokenized_text","token_texts","cleaned_text"]
 
 
-# In[183]:
 
-
-
-
-
-# In[19]:
-
+#this code is to train the classifier
+#here I already trained the model, saved it and have it ready for use
 '''
 train_pool = Pool(X_train, Y_train, cat_features=cat_features)
-
-
-# In[20]:
 
 model = CatBoostClassifier(
     l2_leaf_reg=5,
@@ -132,37 +110,17 @@ cv_data = cv(
     plot="True"
 )
 
-
 model.fit(train_pool);
 model.score(X_train, Y_train)
 '''
-
-
-
-
-
-
-
-'''
-import pickle
-filename = 'catboost_model.sav'
-pickle.dump(model, open(filename, 'wb'))
-'''
-
-
 
 import pickle
 filename = 'catboost_model.sav'
 model1 = pickle.load(open(filename, 'rb'))
 
-
-# In[62]:
-
-
 model1.predict(test)
 
-
-
+#this is to get rid of emoticons and leave only text of the tweets
 import re
 emoticons_str = r"""
     (?:
@@ -257,17 +215,13 @@ def remove_url_by_regex(pattern,string):
     return re.sub(pattern,"", string)
 
 
-# In[120]:
-
-
 def scrapping(number,text):
-  
-    consumer_key = '2CF0SjF91irHA3xzSRJwhMiJF'
-    consumer_secret = 'ERNMd3a05M39IZgK1B8C6VeIfFauFMxvfY17LxiTD9omlNha0K'
-    access_token = '908720407682875393-DkzbECIw8z6Alp3axpLgv3njJ1zcjAU'
-    access_secret = 'ZMcWhoSNdYFUwT8aItpYrIg95cGJgYD2zfjerxhqfsstu'
+    #put your own twitter developer key here
+    consumer_key = 'xxx'
+    consumer_secret = 'xxx'
+    access_token = 'xxx'
+    access_secret = 'xxx'
 
-    
     auth = OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_secret)
  
@@ -303,16 +257,12 @@ def scrapping(number,text):
 
 #####################################################################################################################
 import pickle
-import pandas as pd
-import nltk
-from nltk.corpus import stopwords
 from nltk.tokenize import punkt
 from nltk.corpus.reader import wordnet
 from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 import requests
 from bs4 import BeautifulSoup
-import numpy as np
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -320,21 +270,6 @@ import dash_table
 from dash.dependencies import Input, Output, State
 import plotly.graph_objs as go
 import re
-def get_news_elpais(text):
-    
-    news_contents = []
-    list_titles = []
-    dd=scrapping(50,"kais said")
-    for n in np.arange(0, 50):
-        # Getting the title
-        title = dd["text"][n]
-        list_titles.append(title)
-    df_features = pd.DataFrame(
-         {'Content': list_title
-        })
-
-    # df_show_info
-    return df_features
 
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
@@ -342,10 +277,6 @@ external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 server = app.server
-
-#####
-# Edit from here
-#####
 
 # Colors
 colors = {
@@ -734,11 +665,6 @@ def update_textarea1(jsonified_df):
 app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/bWLwgP.css"})
 app.css.append_css({"external_url": "https://codepen.io/chriddyp/pen/brPBPO.css"})
 
-
-
-#####
-# To here
-#####
 
 if __name__ == '__main__':
     app.run_server(debug=False)
